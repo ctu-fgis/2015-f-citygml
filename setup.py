@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
+from citygml2stl import __version__
 
 setup(
     name='citygml2stl',
-    version='0.1',
+    version=__version__,
     description='CityGML to printable STL',
     long_description=''.join(open('README.rst').readlines()),
     keywords='3D printing, STL, mesh, CityGML',
