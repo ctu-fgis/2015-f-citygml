@@ -1,0 +1,8 @@
+dependencies: []
+devassistant_version: 0.10.1
+original_kwargs:
+  name: !!python/unicode 'citygml2stl'
+  venv: !!python/unicode ''
+project_type:
+- python
+- lib
