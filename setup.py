@@ -4,6 +4,15 @@
 from setuptools import setup, find_packages
 from citygml2stl import __version__
 
+
+def get_requirements(path='requirements.txt'):
+    with open(path) as f:
+        packages = f.read().splitlines()
+    packages = (p.strip() for p in packages if not p.startswith('#'))
+    packages = list(filter(None, packages))
+    return packages
+
+
 setup(
     name='citygml2stl',
     version=__version__,
@@ -14,6 +23,7 @@ setup(
     author_email='miro@hroncok.cz',
     license='MIT',
     packages=find_packages(),
+    install_requires=get_requirements(),
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
