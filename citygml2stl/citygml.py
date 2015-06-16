@@ -48,3 +48,19 @@ class CityGML(object):
                 return
         if not self.city_objects:
             raise exceptions.CityGMLInputError('Found no city objects in {}'.format(self.filename))
+
+    def get_objects_of_types(self, *args):
+        """
+        Return a list of city objects of the given types
+        """
+        objects = []
+        types = args
+        for obj in self.city_objects:
+            for child in obj:
+                for type in types:
+                    if str(child.tag).endswith('}' + type):
+                        objects.append(child)
+                        break
+                if not types:
+                    objects.append(child)
+        return objects

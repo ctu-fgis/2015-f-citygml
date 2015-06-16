@@ -64,3 +64,16 @@ class TestCityGML(object):
         path = 'test/datasets/' + filename
         c = citygml.CityGML(path)
         assert c.namespace == ns
+
+    @pytest.mark.parametrize(('query', 'number'),
+                             ((('Railway',), 10),
+                              (('Building',), 0),
+                              (('Building', 'Railway'), 10),
+                              (tuple(), 10)))
+    def test_get_objects_of_types(self, query, number):
+        """
+        Test if get_objects_of_types() returns such objects
+        """
+        path = 'test/datasets/CityGML_2.0_Test_Dataset_2012-04-23/Part-3-Railway-V2.gml'
+        c = citygml.CityGML(path)
+        assert len(c.get_objects_of_types(*query)) == number
