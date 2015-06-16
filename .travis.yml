@@ -6,8 +6,6 @@ python:
 - pypy
 install:
 - pip install -r requirements.txt
-before_script:
-- ./test/datasets/download.py
 script:
 - py.test -v
 deploy:
