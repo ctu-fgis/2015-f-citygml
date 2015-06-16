@@ -1,3 +1,5 @@
 *.gml
+*.xml
 *.zip
 *_v1.0.0
+/CityGML_2.0_Test_Dataset*

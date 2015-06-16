@@ -9,6 +9,7 @@ class CityGML(object):
     Class providing an interface for extracting data from CityGML files
     """
     namespaces = [
+        'http://www.citygml.org/citygml/1/0/0',
         'http://www.opengis.net/citygml/1.0',
         'http://www.opengis.net/citygml/2.0',
     ]
