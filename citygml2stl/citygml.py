@@ -15,10 +15,16 @@ class CityGML(object):
     ]
 
     def __init__(self, filename):
+        """
+        Initialize the CityGML object by parsing the file located at the given path
+        """
         self.filename = self._get_xml_file(filename)
         self._parse_xml()
 
     def _get_xml_file(self, filename):
+        """
+        Gets the XML file to parse
+        """
         if not os.path.exists(filename):
             raise exceptions.CityGMLInputError('{} does not exist'.format(filename))
         if os.path.isdir(filename):
@@ -30,6 +36,9 @@ class CityGML(object):
         return filename
 
     def _parse_xml(self):
+        """
+        Saves the parsed XML tree, CityGML namespace and list of city_objects
+        """
         self.tree = etree.parse(self.filename)
         for ns in CityGML.namespaces:
             identifier = '//{{{}}}cityObjectMember'.format(ns)
