@@ -57,8 +57,8 @@ class CityGML(object):
         types = args
         for obj in self.city_objects:
             for child in obj:
-                for type in types:
-                    if str(child.tag).endswith('}' + type):
+                for t in types:
+                    if str(child.tag).endswith('}' + t):
                         objects.append(child)
                         break
                 if not types:
