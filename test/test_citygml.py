@@ -36,3 +36,13 @@ class TestCityGML(object):
         path = 'test/datasets'
         with pytest.raises(exceptions.CityGMLInputError):
             c = citygml.CityGML(path)
+
+    @pytest.mark.parametrize(('filename', 'number'),
+                             (('waldbruecke_v1.0.0.gml', 523), ('geoRES_testdata_v1.0.0', 30)))
+    def test_number_of_city_objects(self, filename, number):
+        """
+        Tests the returned number of city objects
+        """
+        path = 'test/datasets/' + filename
+        c = citygml.CityGML(path)
+        assert len(c.city_objects) == number
