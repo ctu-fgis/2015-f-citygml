@@ -73,7 +73,6 @@ class Polygons(object):
         """
         uniq = []
         is_line = True
-        line = []
 
         for point in points:
             is_uniq = True
@@ -87,23 +86,14 @@ class Polygons(object):
 
                 if is_line:
                     if len(uniq) > 2:
-                        if abs(line[0] * point.x + line[1] * point.y + line[2]) > 0.0000001:
+                        if not line.is_on(point):
                             is_line = False
                     elif len(uniq) == 2:
-                        line = cls.line_from_2_points(*uniq)
+                        line = Line(*uniq)
 
         if is_line:
             return []
         return uniq
-
-    @classmethod
-    def line_from_2_points(cls, a, b):
-        """
-        Line equation from two points
-        """
-        line = [a.y - b.y, b.x - a.x, 0]
-        line[2] = -line[0] * a.x - line[1] * a.y
-        return line
 
     @classmethod
     def triangulate(cls, polygon):
@@ -221,3 +211,21 @@ class Plane(object):
         return [u[1] * v[2] - u[2] * v[1],
                 u[2] * v[0] - u[0] * v[2],
                 u[0] * v[1] - u[1] * v[0]]
+
+
+class Line(object):
+    """
+    Class representing  line in a 2D space
+    """
+    def __init__(self, a, b):
+        """
+        Construct a line form 2 given points (have to be different)
+        """
+        self.line = [a.y - b.y, b.x - a.x, 0]
+        self.line[2] = -self.line[0] * a.x - self.line[1] * a.y
+
+    def is_on(self, point, tolerance=0.0000001):
+        """
+        Whether the given point is on the line
+        """
+        return abs(self.line[0] * point.x + self.line[1] * point.y + self.line[2]) < tolerance

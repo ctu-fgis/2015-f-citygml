@@ -1,6 +1,8 @@
 import operator
 import pytest
 
+import p2t
+
 from citygml2stl import citygml
 from citygml2stl import exceptions
 from citygml2stl import polygons
@@ -164,3 +166,14 @@ class TestPlane(object):
         test calculating crossproduct from 3 points
         """
         assert TestPlane.alike(polygons.Plane.crosspoints(*points), cross)
+
+
+class TestLine(object):
+    @pytest.mark.parametrize(('points', 'point', 'on'),
+                             (([[1, 0], [1, 1]], [1, -150], True),
+                              ([[1, 0], [1, 1]], [0, -150], False),
+                              ([[11, 11], [-0.01, -0.01]], [1000, 1000], True),))
+    def test_points_on_line(self, points, point, on):
+        points = map(lambda x: p2t.Point(*x), points)
+        line = polygons.Line(*points)
+        assert line.is_on(p2t.Point(*point)) == on
