@@ -24,7 +24,7 @@ setup(
     license='MIT',
     packages=find_packages(),
     install_requires=get_requirements(),
-    dependency_links = [
+    dependency_links=[
         'git+https://github.com/hroncok/poly2tri.python.git#egg=poly2tri',
     ],
     classifiers=[
