@@ -1,6 +1,8 @@
+import operator
 import pytest
 
 from citygml2stl import citygml
+from citygml2stl import exceptions
 from citygml2stl import polygons
 
 
@@ -35,3 +37,56 @@ class TestPolygons(object):
         e, i = polygons.Polygons.epoints_ipoints(polygon)
         assert len(e) == enumber
         assert len(i) == inumber
+
+
+class TestPlane(object):
+    @classmethod
+    def normalize(cls, planelist):
+        """
+        Normlaize a normal vector of plane represented in a list
+        """
+        size = sum(list(map(abs, planelist))[:3])
+        for i in range(0, 3):
+            planelist[i] /= float(size)
+        return planelist
+
+    @pytest.mark.parametrize(('points', 'result'),
+                             (([[0, 0, 0], [0, 1, 0], [0, 0, 1]], [1, 0, 0, 0]),
+                              ([[0, 0, 0], [0, 1, 0], [1, 0, 0]], [0, 0, 1, 0]),
+                              ([[0, 0, 1], [0, 1, 0], [0, 1, 0], [1, 0, 0]], [1, 1, 1, -1]),
+                              ([[5, 5, 0], [0, 5, 5], [5, 0, 5]], [1, 1, 1, -250]),))
+    def test_valid_plane_construction(self, points, result):
+        """
+        Test if constructing a plane from valid list of points works
+        """
+        plane = polygons.Plane(points)
+
+        # test only the direction of normal vector and not the size
+        planelist = TestPlane.normalize([plane.a, plane.b, plane.c, plane.d])
+        result = TestPlane.normalize(result)
+
+        # test for the negative orientation as well
+        results = [result, list(map(operator.neg, result))]
+
+        assert planelist in results
+
+    def test_to_few_points(self):
+        """
+        Test if constructing a plane from two points raises an exception
+        """
+        with pytest.raises(exceptions.PlaneConstructionError):
+            plane = polygons.Plane([[0, 0, 0], [1, 1, 1]])
+
+    def test_all_same_points(self):
+        """
+        Test if constructing a plane from all points the same raises an exception
+        """
+        with pytest.raises(exceptions.PlaneConstructionError):
+            plane = polygons.Plane([[0] * 3] * 20)
+
+    def test_two_unique_points(self):
+        """
+        Test if constructing a plane from just two unique points raises an exception
+        """
+        with pytest.raises(exceptions.PlaneConstructionError):
+            plane = polygons.Plane([[0] * 3, [1] * 3] * 10)
