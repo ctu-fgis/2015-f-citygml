@@ -41,8 +41,8 @@ class Polygons(object):
             coords = point.text.split()
             for i in range(0, len(coords), 3):
                 ret.append((float(coords[i]),
-                            float(coords[i+1]),
-                            float(coords[i+2])))
+                            float(coords[i + 1]),
+                            float(coords[i + 2])))
         return ret
 
     @classmethod
