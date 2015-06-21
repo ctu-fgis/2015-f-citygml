@@ -38,6 +38,22 @@ class TestPolygons(object):
         assert len(e) == enumber
         assert len(i) == inumber
 
+    @pytest.mark.parametrize('filename',
+                             ('waldbruecke_v1.0.0.gml',
+                              'geoRES_testdata_v1.0.0',
+                              'CityGML_2.0_Test_Dataset_2012-04-23/Part-3-Railway-V2.gml',
+                              'Berlin_Alexanderplatz_v0.4.0.xml'))
+    def test_triangulate(self, filename):
+        """
+        Tests the triangulation
+        There is no way we can check the results, so just check it's going without error
+        """
+        path = 'test/datasets/' + filename
+        c = citygml.CityGML(path)
+        obj = c.get_objects_of_types()[0]
+        polygon = polygons.Polygons.extract_polygons(obj)[0]
+        triangles = polygons.Polygons.triangulate(polygon)
+
 
 class TestPlane(object):
     @classmethod
@@ -49,6 +65,16 @@ class TestPlane(object):
         for i in range(0, 3):
             planelist[i] /= float(size)
         return planelist
+
+    @classmethod
+    def alike(cls, a, b):
+        """
+        Check if the points are almost the same
+        """
+        for i in range(3):
+            if abs(a[i]-b[i]) > 0.0000001:
+                return False
+        return True
 
     @pytest.mark.parametrize(('points', 'result'),
                              (([[0, 0, 0], [0, 1, 0], [0, 0, 1]], [1, 0, 0, 0]),
@@ -105,11 +131,16 @@ class TestPlane(object):
     @pytest.mark.parametrize(('points', 'point3d', 'point2d'),
                              (([[1, 0, 0], [1, 1, 0], [1, 0, 1]], [1, 5, 4], [5, 4]),
                               ([[0, 8, 0], [0, 8, 1], [1, 8, 0]], [0, 8, 4], [0, 4]),
-                              ([[0, 0, -2], [0, 1, -2], [1, 0, -2]], [-1.5, 5, -2], [-1.5, 5]),))
-    def test_to2D(self, points, point3d, point2d):
+                              ([[0, 0, -2], [0, 1, -2], [1, 0, -2]], [-1.5, 5, -2], [-1.5, 5]),
+                              ([[-5, 2, -2.5], [0, 8, -2], [14, 5.6, -2]], [14, 5.6, -2], None),))
+    def test_to2D_to3D(self, points, point3d, point2d):
         """
-        Test if the right coordinate is dropped
+        Test if the conversion to 2D and back to 3D works
         """
         plane = polygons.Plane(points)
         p = plane.to2D(point3d)
-        assert [p.x, p.y] == point2d
+        # None as in don't care
+        if point2d is not None:
+            assert [p.x, p.y] == point2d
+        p = plane.to3D(p)
+        assert TestPlane.alike(p, point3d)

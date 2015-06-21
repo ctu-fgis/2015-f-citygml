@@ -45,6 +45,7 @@ class Polygons(object):
                 ret.append((float(coords[i]),
                             float(coords[i + 1]),
                             float(coords[i + 2])))
+
         return ret
 
     @classmethod
@@ -58,6 +59,43 @@ class Polygons(object):
         for ring in interiors:
             ipoints.append(cls.ring_to_points(ring))
         return epoints, ipoints
+
+    @classmethod
+    def deduplicate(cls, points):
+        """
+        Remove duplicte points from list
+
+        Unfortunately p2t.Points are not comparable, so it is done coordinate by coordinate
+
+        It is crucial to deduplicate 2D points and not 3D points in case 2 different 3D points
+        result to the same 2D point, which is possible due to float limitations
+        """
+        uniq = []
+        for point in points:
+            is_uniq = True
+            for candidate in uniq:
+                if point.x == candidate.x and point.y == candidate.y:
+                    is_uniq = False
+                    break
+            if is_uniq:
+                uniq.append(point)
+        return uniq
+
+    @classmethod
+    def triangulate(cls, polygon):
+        """
+        Triangulate the given polygon
+        """
+        epoints, ipoints = cls.epoints_ipoints(polygon)
+        plane = Plane(epoints)
+
+        cdt = p2t.CDT(cls.deduplicate(map(plane.to2D, epoints)))
+
+        for hole in ipoints:
+            cdt.add_hole(cls.deduplicate(map(plane.to2D, hole)))
+
+        triangles2d = cdt.triangulate()
+        return [list(map(plane.to3D, [t.a, t.b, t.c])) for t in triangles2d]
 
 
 class Plane(object):
@@ -120,6 +158,20 @@ class Plane(object):
         """
         p = point[:self.longest] + point[self.longest+1:]
         return p2t.Point(*p)
+
+    def to3D(self, point):
+        """
+        Get a 3D point from a 2D point by recalculating the omitted less significant coordinate
+        """
+        # set all the points we know and 1, the point we don't has unsignificant value
+        po = [point.x, point.y if self.longest else point.x, point.y, 1]
+        # save the plane to list so we can index it
+        pl = [self.a, self.b, self.c, self.d]
+        # x = -(y*b + z*c + 1*d) / a
+        # etc...
+        po[self.longest] = -sum(
+            [pl[i] * po[i] for i in range(4) if i is not self.longest]) / pl[self.longest]
+        return po[:3]
 
     @classmethod
     def cross(cls, u, v):
