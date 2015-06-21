@@ -1,5 +1,7 @@
 import operator
 
+import p2t
+
 from . import exceptions
 
 
@@ -73,6 +75,7 @@ class Plane(object):
         v = tuple(map(operator.sub, r, q))
         self.a, self.b, self.c = Plane.cross(u, v)
         self.d = -p[0] * self.a - p[1] * self.b - p[2] * self.c
+        self.longest = self._longest()
 
     @classmethod
     def three_different_points(cls, points):
@@ -102,6 +105,21 @@ class Plane(object):
             raise exceptions.PlaneConstructionError('There are only 2 unique points')
 
         return p, q, r
+
+    def _longest(self):
+        """
+        Returns an index of the longest normal vector part
+        """
+        values = tuple(map(abs, [self.a, self.b, self.c]))
+        return max(range(3), key=values.__getitem__)
+
+    def to2D(self, point):
+        """
+        Get a 2D point from a 3D point by simply omitting the less significant coordinate
+        Return an instance of poly2tri point because that's what we'll need
+        """
+        p = point[:self.longest] + point[self.longest+1:]
+        return p2t.Point(*p)
 
     @classmethod
     def cross(cls, u, v):

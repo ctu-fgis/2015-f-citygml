@@ -90,3 +90,26 @@ class TestPlane(object):
         """
         with pytest.raises(exceptions.PlaneConstructionError):
             plane = polygons.Plane([[0] * 3, [1] * 3] * 10)
+
+    @pytest.mark.parametrize(('points', 'longest'),
+                             (([[0, 0, 0], [0, 1, 0], [0, 0, 1]], 0),
+                              ([[0, 0, 0], [0, 0, 1], [1, 0, 0]], 1),
+                              ([[0, 0, 0], [0, 1, 0], [1, 0, 0]], 2),))
+    def test_longest_recognition(self, points, longest):
+        """
+        Test if the longest index is well recognized
+        """
+        plane = polygons.Plane(points)
+        assert plane.longest == longest
+
+    @pytest.mark.parametrize(('points', 'point3d', 'point2d'),
+                             (([[1, 0, 0], [1, 1, 0], [1, 0, 1]], [1, 5, 4], [5, 4]),
+                              ([[0, 8, 0], [0, 8, 1], [1, 8, 0]], [0, 8, 4], [0, 4]),
+                              ([[0, 0, -2], [0, 1, -2], [1, 0, -2]], [-1.5, 5, -2], [-1.5, 5]),))
+    def test_to2D(self, points, point3d, point2d):
+        """
+        Test if the right coordinate is dropped
+        """
+        plane = polygons.Plane(points)
+        p = plane.to2D(point3d)
+        assert [p.x, p.y] == point2d
