@@ -49,5 +49,5 @@ class Polygons(object):
         epoints = cls.ring_to_points(exterior)
         ipoints = []
         for ring in interiors:
-            ipoints += cls.ring_to_points(ring)
+            ipoints.append(cls.ring_to_points(ring))
         return epoints, ipoints
