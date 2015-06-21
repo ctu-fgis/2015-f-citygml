@@ -8,9 +8,9 @@ from citygml2stl import __version__
 def get_requirements(path='requirements.txt'):
     with open(path) as f:
         packages = f.read().splitlines()
-    packages = (p.strip() for p in packages if not p.startswith('#'))
+    packages = (p.strip() for p in packages if not p.startswith('#') and not p.startswith('-'))
     packages = list(filter(None, packages))
-    return packages
+    return packages + ['poly2tri']
 
 
 setup(
@@ -24,6 +24,9 @@ setup(
     license='MIT',
     packages=find_packages(),
     install_requires=get_requirements(),
+    dependency_links = [
+        'git+https://github.com/hroncok/poly2tri.python.git#egg=poly2tri',
+    ],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
