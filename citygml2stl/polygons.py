@@ -61,9 +61,10 @@ class Polygons(object):
         return epoints, ipoints
 
     @classmethod
-    def deduplicate(cls, points):
+    def preprocess(cls, points):
         """
-        Remove duplicte points from list
+        Remove duplicte points from list and check if all the points aren't on the same line
+        If they are, return empty list
 
         Unfortunately p2t.Points are not comparable, so it is done coordinate by coordinate
 
@@ -71,15 +72,38 @@ class Polygons(object):
         result to the same 2D point, which is possible due to float limitations
         """
         uniq = []
+        is_line = True
+        line = []
+
         for point in points:
             is_uniq = True
             for candidate in uniq:
                 if point.x == candidate.x and point.y == candidate.y:
                     is_uniq = False
                     break
+
             if is_uniq:
                 uniq.append(point)
+
+                if is_line:
+                    if len(uniq) > 2:
+                        if abs(line[0] * point.x + line[1] * point.y + line[2]) > 0.0000001:
+                            is_line = False
+                    elif len(uniq) == 2:
+                        line = cls.line_from_2_points(*uniq)
+
+        if is_line:
+            return []
         return uniq
+
+    @classmethod
+    def line_from_2_points(cls, a, b):
+        """
+        Line equation from two points
+        """
+        line = [a.y - b.y, b.x - a.x, 0]
+        line[2] = -line[0] * a.x - line[1] * a.y
+        return line
 
     @classmethod
     def triangulate(cls, polygon):
@@ -89,10 +113,15 @@ class Polygons(object):
         epoints, ipoints = cls.epoints_ipoints(polygon)
         plane = Plane(epoints)
 
-        cdt = p2t.CDT(cls.deduplicate(map(plane.to2D, epoints)))
+        epoints = cls.preprocess(map(plane.to2D, epoints))
+        if not epoints:
+            return []
+        cdt = p2t.CDT(epoints)
 
         for hole in ipoints:
-            cdt.add_hole(cls.deduplicate(map(plane.to2D, hole)))
+            hole = cls.preprocess(map(plane.to2D, hole))
+            if hole:
+                cdt.add_hole(hole)
 
         triangles2d = cdt.triangulate()
         return [list(map(plane.to3D, [t.a, t.b, t.c])) for t in triangles2d]
@@ -107,25 +136,32 @@ class Plane(object):
         """
         Initialize the plane with a list of points (at least 3 different) positioned on it
         """
-        p, q, r = Plane.three_different_points(points)
+        p, q, r, c = Plane.three_different_points(points)
 
+        c.append(-p[0] * c[0] - p[1] * c[1] - p[2] * c[2])
+        self.a, self.b, self.c, self.d = c
+        self.longest = self._longest()
+
+    @classmethod
+    def crosspoints(cls, p, q, r):
+        """
+        Calculate a cross porduct from 3 points
+        """
         u = tuple(map(operator.sub, p, q))
         v = tuple(map(operator.sub, r, q))
-        self.a, self.b, self.c = Plane.cross(u, v)
-        self.d = -p[0] * self.a - p[1] * self.b - p[2] * self.c
-        self.longest = self._longest()
+        return Plane.cross(u, v)
 
     @classmethod
     def three_different_points(cls, points):
         """
-        Return three different points or raise an exception
+        Return three different points and their cross product or raise an exception
         """
         if len(points) < 3:
             raise exceptions.PlaneConstructionError('At least 3 points have to be provided')
         p = points[0]
-        q = r = None
-
+        q = r = c = None
         idx = 0
+
         while idx < len(points) - 1:
             idx += 1
             if p != points[idx]:
@@ -138,11 +174,15 @@ class Plane(object):
             idx += 1
             if p != points[idx] and q != points[idx]:
                 r = points[idx]
-                break
-        if r is None:
-            raise exceptions.PlaneConstructionError('There are only 2 unique points')
+                c = cls.crosspoints(p, q, r)
+                if c[0] or c[1] or c[2]:
+                    break
+                else:
+                    c = None
 
-        return p, q, r
+        if c is None:
+            raise exceptions.PlaneConstructionError('All points form a line')
+        return p, q, r, c
 
     def _longest(self):
         """

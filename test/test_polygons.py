@@ -40,7 +40,6 @@ class TestPolygons(object):
 
     @pytest.mark.parametrize('filename',
                              ('waldbruecke_v1.0.0.gml',
-                              'geoRES_testdata_v1.0.0',
                               'CityGML_2.0_Test_Dataset_2012-04-23/Part-3-Railway-V2.gml',
                               'Berlin_Alexanderplatz_v0.4.0.xml'))
     def test_triangulate(self, filename):
@@ -50,9 +49,12 @@ class TestPolygons(object):
         """
         path = 'test/datasets/' + filename
         c = citygml.CityGML(path)
-        obj = c.get_objects_of_types()[0]
-        polygon = polygons.Polygons.extract_polygons(obj)[0]
-        triangles = polygons.Polygons.triangulate(polygon)
+        for obj in c.get_objects_of_types():
+            for polygon in polygons.Polygons.extract_polygons(obj):
+                try:
+                    polygons.Polygons.triangulate(polygon)
+                except exceptions.PlaneConstructionError:
+                    pass
 
 
 class TestPlane(object):
@@ -117,6 +119,13 @@ class TestPlane(object):
         with pytest.raises(exceptions.PlaneConstructionError):
             plane = polygons.Plane([[0] * 3, [1] * 3] * 10)
 
+    def test_points_in_line(self):
+        """
+        Test if constructing a plane from points forming a line raises an exception
+        """
+        with pytest.raises(exceptions.PlaneConstructionError):
+            plane = polygons.Plane([[-1]*3, [0]*3, [1]*3, [8]*3, [-3]*3, [50]*3, [100]*3, [-10]*3])
+
     @pytest.mark.parametrize(('points', 'longest'),
                              (([[0, 0, 0], [0, 1, 0], [0, 0, 1]], 0),
                               ([[0, 0, 0], [0, 0, 1], [1, 0, 0]], 1),
@@ -144,3 +153,14 @@ class TestPlane(object):
             assert [p.x, p.y] == point2d
         p = plane.to3D(p)
         assert TestPlane.alike(p, point3d)
+
+    @pytest.mark.parametrize(('points', 'cross'),
+                             (([[1, 0, 0], [1, 1, 0], [1, 0, 1]], [-1, 0, 0]),
+                              ([[0, 8, 0], [0, 8, 1], [1, 8, 0]], [0, -1, 0]),
+                              ([[0, 0, -2], [0, 1, -2], [1, 0, -2]], [0, 0, 1]),
+                              ([[-5, 2, -2.5], [0, 8, -2], [14, 5.6, -2]], [-1.2, -7, 96]),))
+    def test_crosspoints(self, points, cross):
+        """
+        test calculating crossproduct from 3 points
+        """
+        assert TestPlane.alike(polygons.Plane.crosspoints(*points), cross)
