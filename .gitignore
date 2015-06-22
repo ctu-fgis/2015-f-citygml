@@ -9,3 +9,4 @@ build
 sdist
 
 *.sqlite3
+*.stl
