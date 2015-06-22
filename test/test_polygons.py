@@ -52,11 +52,7 @@ class TestPolygons(object):
         path = 'test/datasets/' + filename
         c = citygml.CityGML(path)
         for obj in c.get_objects_of_types():
-            for polygon in polygons.Polygons.extract_polygons(obj):
-                try:
-                    polygons.Polygons.triangulate(polygon)
-                except exceptions.PlaneConstructionError:
-                    pass
+            polygons.object2triangles(obj)
 
 
 class TestPlane(object):

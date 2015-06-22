@@ -116,6 +116,24 @@ class Polygons(object):
         triangles2d = cdt.triangulate()
         return [list(map(plane.to3D, [t.a, t.b, t.c])) for t in triangles2d]
 
+    @classmethod
+    def triangulate_all(cls, obj):
+        """
+        Triangulate all polygons from given object
+        """
+        triangles = []
+        for polygon in cls.extract_polygons(obj):
+            try:
+                triangles += cls.triangulate(polygon)
+            except exceptions.PlaneConstructionError:
+                pass
+        return triangles
+
+
+def object2triangles(obj):
+    """Shortcut to triangulation method from Polygons class"""
+    return Polygons.triangulate_all(obj)
+
 
 class Plane(object):
     """
