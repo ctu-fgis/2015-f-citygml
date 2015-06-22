@@ -102,6 +102,14 @@ You can even use `Python's admesh <https://pypi.python.org/pypi/admesh>`_ module
 Note that due to limitations of the admesh module it is currently not possible to redirect output
 of citygml2stl to admesh without writing it to a file first.
 
+A sample script to invoke from command line is installed to PATH:
+
+.. code-block:: sh
+
+    $ citygml2stl Berlin_Alexanderplatz_v0.4.0.xml 
+    Converting Berlin_Alexanderplatz_v0.4.0.xml to Berlin_Alexanderplatz_v0.4.0.stl
+
+
 Authors
 -------
 

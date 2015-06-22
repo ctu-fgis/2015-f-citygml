@@ -23,6 +23,7 @@ setup(
     author_email='miro@hroncok.cz',
     license='MIT',
     packages=find_packages(),
+    entry_points={'console_scripts': ['citygml2stl=citygml2stl.cli:main']},
     install_requires=get_requirements(),
     dependency_links=[
         'git+https://github.com/hroncok/poly2tri.python.git#egg=poly2tri',
