@@ -22,7 +22,7 @@ setup(
     author='Miro Hrončok',
     author_email='miro@hroncok.cz',
     license='MIT',
-    packages=find_packages(),
+    packages=[p for p in find_packages() if p != 'test'],
     entry_points={'console_scripts': ['citygml2stl=citygml2stl.cli:main']},
     install_requires=get_requirements(),
     dependency_links=[
