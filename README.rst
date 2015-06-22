@@ -16,7 +16,7 @@ year 2014/2015, group F). Licensed as MIT (see LICENSE).
 .. figure:: https://raw.githubusercontent.com/ctu-yfsg/2015-f-citygml/master/berlin.png
    :alt: Image of generated STL
 
-   CityGML of Alexanderplatz, Berlin, Germany. Data © `Research Center Karlsruhe,
+   CityGML of Alexanderplatz, Berlin, Germany as STL. Data © `Research Center Karlsruhe,
    Institute for Applied Computer Science <http://www.iai.fzk.de/www-extern/index.php?id=222&L=1>`_
 
 Usage
