@@ -19,6 +19,26 @@ year 2014/2015, group F). Licensed as MIT (see LICENSE).
    CityGML of Alexanderplatz, Berlin, Germany as STL. Data © `Research Center Karlsruhe,
    Institute for Applied Computer Science <http://www.iai.fzk.de/www-extern/index.php?id=222&L=1>`_
 
+Installation
+------------
+
+To install, just use regular Python means, such as pip.
+It is recommended to install Cython before you install this or other requirements.
+Python 3.3+, 2.7 and pypy are supported.
+
+.. code-block:: sh
+
+    pip install Cython
+    pip install citygml2stl
+
+Or if installing from cloned repository or unpacked sources:
+
+.. code-block:: sh
+
+    pip install Cython
+    pip install -r requirements.txt
+    python setup.py install
+
 Usage
 -----
 
