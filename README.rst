@@ -16,16 +16,15 @@ year 2014/2015, group F). Licensed as MIT (see LICENSE).
 .. figure:: https://raw.githubusercontent.com/ctu-yfsg/2015-f-citygml/master/berlin.png
    :alt: Image of generated STL
 
-   CityGML of Alexanderplatz, Berlin, Germany.
-
-   Data © `Research Center Karlsruhe, Institute for Applied Computer Science <http://www.iai.fzk.de/www-extern/index.php?id=222&L=1>`_
+   CityGML of Alexanderplatz, Berlin, Germany. Data © `Research Center Karlsruhe,
+   Institute for Applied Computer Science <http://www.iai.fzk.de/www-extern/index.php?id=222&L=1>`_
 
 Usage
 -----
 
-.. highlight:: python
+To use cityglm2stl from Python proceed as follows:
 
-To use cityglm2stl from Python proceed as follows::
+.. code-block:: python
 
     # import stuff
     from citygml2stl import citygml
@@ -42,7 +41,9 @@ To use cityglm2stl from Python proceed as follows::
         for obj in c.get_objects_of_types('Building'):
             berlin.write_triangles(polygons.object2triangles(obj))
 
-Or, if you would prefer to have multiple STL files instead::
+Or, if you would prefer to have multiple STL files instead:
+
+.. code-block:: python
 
     # initialize a counter for filenames
     counter = 0
@@ -60,7 +61,9 @@ That said, consider that output needs repairing. Use public cloud services such 
 `netfabb Cloud <http://cloud.netfabb.com/>`_ or even open source tools such as
 `ADMesh <http://admesh.org/>`_ to repair the output.
 
-You can even use Python's `admesh <https://pypi.python.org/pypi/admesh>`_ module to repair the STLs::
+You can even use `Python's admesh <https://pypi.python.org/pypi/admesh>`_ module to repair the STLs:
+
+.. code-block:: python
 
     import admesh
     ...
