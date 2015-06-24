@@ -27,7 +27,9 @@
 \begin{frame}
   \frametitle{Zadání}
     \begin{itemize}[<+->]
-      \item foo
+      \item knihovna pro Python
+      \item převod 3D objektů z CityGML souborů do formátu STL
+      \item nějaké lidské rozhraní
     \end{itemize}
 \end{frame}
 
@@ -36,7 +38,13 @@
 \begin{frame}
   \frametitle{Co to je CityGML}
     \begin{itemize}[<+->]
-      \item foo
+      \item \href{http://www.citygml.org/}{citygml.org}
+      \item souborový formát na bázi XML
+      \item otevřený standard
+      \item virtuální 3D modely měst a/nebo krajiny
+      \item mnoho metainformací
+      \item hlavně pro zobrazení na obrazovce
+      \item různé verze standardu
     \end{itemize}
 \end{frame}
 
@@ -45,7 +53,15 @@
 \begin{frame}
   \frametitle{Z čeho se skládá CityGML}
     \begin{itemize}[<+->]
-      \item foo
+      \item obří XML strom
+      \item obsahuje „city objekty“
+      \item každý 3D city objekt má mj. definovaný svůj tvar
+      \item mnoho dalších informací, pro tuto práci nepotřebných
+      \begin{itemize}[<+->]
+        \item textury
+        \item materiály
+        \item meta informace
+      \end{itemize}
     \end{itemize}
 \end{frame}
 
@@ -54,7 +70,13 @@
 \begin{frame}
   \frametitle{Reprezentace 3D objektů v CityGML}
     \begin{itemize}[<+->]
-      \item foo
+      \item skládají se z polygonů
+      \begin{itemize}[<+->]
+        \item jedno ohraničení exteriéru polygonu
+        \item libovolně mnoho ohraničení interiérů polygonu
+      \end{itemize}
+      \item seznam bodů v 3D prostoru
+      \item orientace?
     \end{itemize}
 \end{frame}
 
@@ -63,7 +85,11 @@
 \begin{frame}
   \frametitle{Co je STL}
     \begin{itemize}[<+->]
-      \item foo
+      \item reprezentace 3D objektů
+      \item hlavně pro 3D tisk
+      \item žádné metainformace (kromě názvu)
+      \item binární/textová podoba
+      \item de facto standard
     \end{itemize}
 \end{frame}
 
@@ -72,7 +98,12 @@
 \begin{frame}
   \frametitle{Z čeho se skládá STL}
     \begin{itemize}[<+->]
-      \item foo
+      \item triangulární síť (mesh)
+      \item seznam trojúhelníků
+      \begin{itemize}[<+->]
+        \item seznam vrcholů
+        \item normála
+      \end{itemize}
     \end{itemize}
 \end{frame}
 
@@ -80,9 +111,13 @@
 
 \begin{frame}
   \frametitle{Jak funguje cityglm2stl}
-    \begin{itemize}[<+->]
-      \item foo
-    \end{itemize}
+    \begin{enumerate}[<+->]
+      \item rozparsování XML stromu
+      \item nalezení city objektů
+      \item extrakce polygonů
+      \item triangulace polygonů (poly2tri)
+      \item export textového STL souboru
+    \end{enumerate}
 \end{frame}
 
 \section{Výsledky a problémy}
@@ -90,7 +125,14 @@
 \begin{frame}
   \frametitle{Co se podařilo, co ne}
     \begin{itemize}[<+->]
-      \item foo
+      \item \href{https://github.com/ctu-yfsg/2015-f-citygml}{citygml2stl na GitHubu}
+      \item \href{http://pypi.python.org/pypi/citygml2stl}{citygml2stl na PyPI}
+      \item knihovní rozhraní s mnoho možnostmi
+      \item jednoduché rozhraní pro příkazovou řádku
+      \item licence MIT
+      \item velké pokrytí testy
+      \item poly2tri má problém triangulovat některé polygony
+      \item výsledky nejsou validní STL meshe
     \end{itemize}
 \end{frame}
 
